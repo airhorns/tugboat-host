@@ -1,0 +1,29 @@
+version: "2.1"
+
+services:
+  bringup:
+    build: './host'
+    tty: true
+    command: ["roslaunch", "turtlebot3_bringup", "turtlebot3_remote.launch"]
+    privileged: true
+    environment:
+      TURTLEBOT3_MODEL: 'burger'
+      ROS_MASTER_URI: http://$TURTLEBOT_IP:11311
+
+  # This container is for manual invocation via `docker-compose run shell bash`.
+  # It's handy to be able to mess around in a set up environment with the same dependencies and environment
+  # as the rest of the services, but, we don't generally need it running in the background. So, this sets it all up
+  # but we execute a command (true) that exits immediately to keep the container stopped by default.
+  shell:
+    build: './host'
+    command: "true"
+    privileged: true
+    stdin_open: true
+    tty: true
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      DISPLAY: $IP:0
+      QT_X11_NO_MITSHM: '1'
+      TURTLEBOT3_MODEL: 'burger'
+      ROS_MASTER_URI: http://$TURTLEBOT_IP:11311
